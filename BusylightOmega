@@ -1,0 +1,43 @@
+import hid
+import BusylightCommands as blc
+import time 
+
+# Vendor ID (VID) and Product ID (PID) for Kuando Omega Busylight
+VID = 0x27BB
+PID = 0x3BCF
+
+# Find the Kuando Omega Busylight device
+devices = hid.enumerate(VID, PID)
+if not devices:
+    raise ValueError("Kuando Omega Busylight not found.")
+device_info = devices[0]
+device = hid.device()
+device.open_path(device_info['path'])
+
+
+# Send the data to the device
+
+device.write(blc.turnRed())
+
+time.sleep(.5)
+
+device.write(blc.turnBlue())
+
+time.sleep(.5)
+
+device.write(blc.turnGreen())
+
+time.sleep(.5)
+device.write(blc.turnOff())
+# Close the device
+timer = 60
+
+while timer != 0:
+
+    timer -= 15
+    device.write(blc.keepAlive())
+    print("Sent KeepAlive Packet")
+    time.sleep(15)
+
+print("Did it stay on for the entire time?")
+device.close()
